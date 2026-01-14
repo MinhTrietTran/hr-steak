@@ -9,26 +9,73 @@ import {
   Medal,
   FileText,
   ChevronsLeft,
+  Users,
+  CheckSquare,
 } from "lucide-react";
 import logo from "../assets/logo.png";
 
 export default function Sidebar({ isOpen, onClose }) {
-  const location = useLocation(); // Để biết đang ở trang nào mà bôi đậm
+  const location = useLocation();
 
-  // Danh sách menu cấu hình sẵn
-  const menuItems = [
-    { path: "/dashboard", name: "Dashboard", icon: LayoutDashboard },
-    { path: "/profile", name: "Profile", icon: User },
-    { path: "/timesheet", name: "Timesheet", icon: CalendarDays },
-    { path: "/leave", name: "Leave", icon: Plane },
-    { path: "/activity", name: "Activity", icon: Activity },
-    { path: "/reward", name: "Reward", icon: Medal },
-    { path: "/report", name: "Report", icon: FileText },
+  // 1. Lấy thông tin User đang đăng nhập từ LocalStorage
+  const userString = localStorage.getItem("user");
+  const user = userString ? JSON.parse(userString) : null;
+  const userRoles = user?.roles || []; // Ví dụ: ["ROLE_MANAGER"]
+
+  // Hàm kiểm tra quyền (Chỉ cần dính 1 quyền là cho qua)
+  const hasRole = (allowedRoles) => {
+    if (!user) return false;
+    return userRoles.some((role) => allowedRoles.includes(role));
+  };
+
+  // 2. Định nghĩa Menu kèm theo quyền hạn (allowedRoles)
+  const allMenuItems = [
+    {
+      path: "/dashboard",
+      name: "Dashboard",
+      icon: LayoutDashboard,
+      allowedRoles: ["ROLE_ADMIN", "ROLE_MANAGER", "ROLE_EMPLOYEE"], // Ai cũng vào được
+    },
+    {
+      path: "/users",
+      name: "Quản lý nhân sự",
+      icon: Users,
+      allowedRoles: ["ROLE_ADMIN"], // Chỉ Admin (admin/admin123)
+    },
+    {
+      path: "/approve-leave",
+      name: "Duyệt đơn nghỉ",
+      icon: CheckSquare,
+      allowedRoles: ["ROLE_MANAGER", "ROLE_ADMIN"], // Manager (manager/manager123) và Admin
+    },
+    {
+      path: "/profile",
+      name: "Hồ sơ cá nhân",
+      icon: User,
+      allowedRoles: ["ROLE_ADMIN", "ROLE_MANAGER", "ROLE_EMPLOYEE"],
+    },
+    {
+      path: "/timesheet",
+      name: "Chấm công",
+      icon: CalendarDays,
+      allowedRoles: ["ROLE_EMPLOYEE", "ROLE_MANAGER"],
+    },
+    {
+      path: "/leave",
+      name: "Xin nghỉ phép",
+      icon: Plane,
+      allowedRoles: ["ROLE_EMPLOYEE", "ROLE_MANAGER"],
+    },
+    // ... Sếp thêm các menu khác tương tự
   ];
+
+  // 3. Lọc danh sách menu dựa trên quyền thật
+  const visibleMenuItems = allMenuItems.filter((item) =>
+    hasRole(item.allowedRoles)
+  );
 
   return (
     <>
-      {/* 1. Lớp màn đen mờ che phía sau (Overlay) */}
       {isOpen && (
         <div
           className="fixed inset-0 bg-black/50 z-40 transition-opacity"
@@ -36,19 +83,20 @@ export default function Sidebar({ isOpen, onClose }) {
         />
       )}
 
-      {/* 2. Phần Menu chính (Drawer) */}
       <aside
         className={`fixed top-0 left-0 h-full w-64 bg-[#F3F4F6] shadow-2xl z-50 transform transition-transform duration-300 ease-in-out ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        {/* Header của Menu */}
         <div className="flex items-center justify-between p-6 mb-4">
           <div className="flex flex-col items-start">
-            {/* Logo dùng filter brightness-0 để thành màu đen */}
             <img src={logo} alt="HR Steak" className="h-8 mb-2 brightness-0" />
             <span className="font-bold text-lg tracking-tight text-black">
               HR Steak
+            </span>
+            {/* Hiển thị Role cho ngầu */}
+            <span className="text-xs text-blue-600 font-bold px-2 py-0.5 bg-blue-100 rounded-full mt-1">
+              {userRoles[0]?.replace("ROLE_", "")}
             </span>
           </div>
           <button
@@ -59,9 +107,8 @@ export default function Sidebar({ isOpen, onClose }) {
           </button>
         </div>
 
-        {/* Danh sách Link */}
         <nav className="space-y-1 px-4">
-          {menuItems.map((item) => {
+          {visibleMenuItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
 
@@ -69,7 +116,7 @@ export default function Sidebar({ isOpen, onClose }) {
               <Link
                 key={item.path}
                 to={item.path}
-                onClick={onClose} // Bấm xong tự đóng menu
+                onClick={onClose}
                 className={`flex items-center gap-4 px-4 py-3 rounded-lg transition-all ${
                   isActive
                     ? "text-blue-700 font-bold border-l-4 border-blue-700 bg-white shadow-sm"
@@ -84,6 +131,20 @@ export default function Sidebar({ isOpen, onClose }) {
               </Link>
             );
           })}
+
+          {/* Nút Đăng xuất */}
+          <div className="mt-8 border-t border-gray-300 pt-4">
+            <button
+              onClick={() => {
+                localStorage.clear(); // Xóa sạch token
+                window.location.href = "/"; // Đá về trang login
+              }}
+              className="flex w-full items-center gap-4 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg font-medium transition-all"
+            >
+              <ChevronsLeft size={20} className="rotate-180" />
+              Đăng xuất
+            </button>
+          </div>
         </nav>
       </aside>
     </>

@@ -3,6 +3,31 @@ import { useNavigate } from "react-router-dom";
 import { loginUser } from "../services/api";
 import logo from "../assets/logo.png";
 
+const handleLogin = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setError(null);
+
+  try {
+    // Gọi API thật với tài khoản Sếp vừa test (ví dụ: manager / manager123)
+    const data = await loginUser(username, password);
+
+    // Kiểm tra cấu trúc trả về từ Postman: data.token và data.roles
+    console.log("Login Success:", data); // Sếp bật F12 để soi xem role là gì
+
+    // Lưu vào kho
+    localStorage.setItem("token", data.token);
+    // Lưu nguyên cục data (chứa id, username, roles, refreshToken)
+    localStorage.setItem("user", JSON.stringify(data));
+
+    navigate("/dashboard");
+  } catch (err) {
+    setError("Đăng nhập thất bại! Kiểm tra lại tài khoản.");
+  } finally {
+    setLoading(false);
+  }
+};
+
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
