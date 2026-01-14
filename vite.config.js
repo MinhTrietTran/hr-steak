@@ -6,9 +6,15 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      // Khi nào code gọi đến đường dẫn bắt đầu bằng /api
+      // 1. Chuyển hướng các request Chấm công về cổng 5033
+      "/api/attendance": {
+        target: "http://localhost:5033",
+        changeOrigin: true,
+        secure: false,
+      },
+      // 2. Chuyển hướng tất cả các request /api còn lại (Login, Profile, Employees) về cổng 5032
       "/api": {
-        target: "http://localhost:5032", // Tự động chuyển hướng sang cổng 5032 của User Service
+        target: "http://localhost:5032",
         changeOrigin: true,
         secure: false,
       },

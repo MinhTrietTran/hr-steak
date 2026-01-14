@@ -1,27 +1,29 @@
 import axios from "axios";
 
-// 1. Cấu hình Axios User
+// CHỈ CẦN 1 INSTANCE DUY NHẤT (Vì Proxy ở vite.config.js sẽ tự phân luồng cổng)
 export const apiUser = axios.create({
-  baseURL: "", // Để trống để dùng Proxy trong vite.config.js
+  baseURL: "", // BẮT BUỘC ĐỂ TRỐNG để trình duyệt gọi qua Proxy (localhost:5173)
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// 2. INTERCEPTOR: Tự động gắn Token vào mọi request
+// INTERCEPTOR: Gắn chìa khóa Token (Giữ nguyên logic cũ)
 apiUser.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`; // Gắn chìa khóa vào đây
+      config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// 3. Các hàm gọi API
+// --- CÁC HÀM GỌI API ---
+
 export const loginUser = async (username, password) => {
+  // Proxy sẽ tự đẩy request này về cổng 5032
   const response = await apiUser.post("/api/auth/login", {
     username,
     password,
@@ -29,14 +31,22 @@ export const loginUser = async (username, password) => {
   return response.data;
 };
 
-// Hàm mới: Lấy thông tin cá nhân (Cần Token)
 export const getMyProfile = async () => {
   const response = await apiUser.get("/api/users/me");
   return response.data;
 };
 
-// Hàm lấy danh sách nhân viên (Dành cho Manager/Admin)
 export const getEmployees = async () => {
   const response = await apiUser.get("/api/employees");
+  return response.data;
+};
+
+export const postAttendance = async (type, note = "") => {
+  // Nhờ cấu hình Proxy đặt "/api/attendance" lên đầu,
+  // request này sẽ tự động được đẩy về đúng cổng 5033
+  const response = await apiUser.post("/api/attendance", {
+    type: type,
+    note: note,
+  });
   return response.data;
 };
