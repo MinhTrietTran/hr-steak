@@ -1,7 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Layout from "./components/Layout"; // Import Layout mới
+import Layout from "./components/Layout";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
+import Profile from "./pages/Profile"; // 1. Import Profile
 
 function App() {
   return (
@@ -9,14 +10,15 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
 
-        {/* Nhóm các trang cần có Menu Sidebar vào trong Layout */}
         <Route element={<Layout />}>
           <Route path="/dashboard" element={<Dashboard />} />
-          {/* Sau này Sếp thêm các trang khác vào đây: */}
-          {/* <Route path="/leave" element={<LeavePage />} /> */}
+
+          {/* 2. Khai báo đường dẫn Profile tại đây */}
+          <Route path="/profile" element={<Profile />} />
         </Route>
       </Routes>
     </BrowserRouter>
   );
 }
+
 export default App;

@@ -1,24 +1,36 @@
 import axios from "axios";
 
-// Cấu hình cổng User Service (Port 5032 theo chỉ đạo của Sếp)
+// 1. Cấu hình Axios User
 export const apiUser = axios.create({
-  baseURL: "",
+  baseURL: "", // Để trống để dùng Proxy trong vite.config.js
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// Hàm Login - Gọi API /api/auth/login
+// 2. INTERCEPTOR: Tự động gắn Token vào mọi request
+apiUser.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`; // Gắn chìa khóa vào đây
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+// 3. Các hàm gọi API
 export const loginUser = async (username, password) => {
-  try {
-    const response = await apiUser.post("/api/auth/login", {
-      username,
-      password,
-    });
-    return response.data; // Trả về token và thông tin user
-  } catch (error) {
-    throw error.response
-      ? error.response.data
-      : { message: "Lỗi kết nối Server" };
-  }
+  const response = await apiUser.post("/api/auth/login", {
+    username,
+    password,
+  });
+  return response.data;
+};
+
+// Hàm mới: Lấy thông tin cá nhân (Cần Token)
+export const getMyProfile = async () => {
+  const response = await apiUser.get("/api/users/me");
+  return response.data;
 };
