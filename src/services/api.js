@@ -50,3 +50,10 @@ export const postAttendance = async (type, note = "") => {
   });
   return response.data;
 };
+
+// Hàm lấy lịch sử chấm công cá nhân
+export const getMyAttendanceLogs = async () => {
+  // Proxy sẽ chuyển tiếp sang http://localhost:5033/api/attendance/me
+  const response = await apiUser.get("/api/attendance/me");
+  return response.data; // Trả về object chứa { message, data: [...] }
+};
