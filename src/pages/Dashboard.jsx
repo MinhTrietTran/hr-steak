@@ -1,16 +1,34 @@
+import { useEffect, useState } from "react";
+import { getMyProfile } from "../services/api"; // 1. Import hàm gọi API
 import { Sun, Trophy, Armchair, Calendar, CheckCircle2 } from "lucide-react";
 import { mockData } from "../mockData";
 
 export default function Dashboard() {
+  // 2. Tạo state để lưu thông tin user thật
+  const [user, setUser] = useState(null);
+
+  // 3. Gọi API lấy thông tin ngay khi component được render
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const data = await getMyProfile(); // Gọi API /api/users/me
+        setUser(data); // Lưu dữ liệu vào state
+      } catch (error) {
+        console.error("Lỗi lấy thông tin user:", error);
+      }
+    };
+    fetchProfile();
+  }, []);
+
   return (
     // Thêm pb-10 để nội dung không bị dính sát đáy khi cuộn
     <div className="pb-10">
       {/* 1. Welcome Banner */}
       <section className="m-6 p-10 bg-[#3D7A8A] rounded-2xl text-white flex justify-between items-center relative overflow-hidden shadow-lg">
         <div className="z-10 relative">
-          {/* Lấy tên từ mockData */}
+          {/* 4. Hiển thị First Name thật (Logic: Có user thì hiện tên, chưa có thì hiện "User") */}
           <h2 className="text-3xl font-bold mb-2">
-            👋 Welcome, {mockData.user.fullName}!
+            👋 Welcome, {user ? user.firstName : "User"}!
           </h2>
           <p className="text-lg opacity-90">
             You checked in at{" "}
@@ -82,7 +100,7 @@ export default function Dashboard() {
   );
 }
 
-// --- Component con (Đã tối ưu chiều cao) ---
+// --- Component con (Giữ nguyên như code Sếp đưa) ---
 
 function StatCard({ title, subtitle, Icon, color, progress }) {
   return (

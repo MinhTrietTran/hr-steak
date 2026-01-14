@@ -49,15 +49,20 @@ export default function Layout() {
             <Menu className="cursor-pointer text-white" />
           </button>
 
-          <img
-            src={logo}
-            alt="HR Steak Logo"
-            className="h-8 w-8 object-contain"
-          />
-
-          <span className="text-xl font-bold tracking-tight capitalize">
-            {currentTitle}
-          </span>
+          {/* CẬP NHẬT: Bọc cả Logo và Tên trang vào trong Link */}
+          <Link
+            to="/dashboard"
+            className="flex items-center gap-3 hover:opacity-80 transition-opacity select-none"
+          >
+            <img
+              src={logo}
+              alt="HR Steak Logo"
+              className="h-8 w-8 object-contain"
+            />
+            <span className="text-xl font-bold tracking-tight capitalize cursor-pointer">
+              {currentTitle}
+            </span>
+          </Link>
         </div>
 
         {/* Phần PHẢI: Chuông & Avatar (Đã sửa lại để có Popup an toàn) */}

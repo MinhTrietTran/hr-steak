@@ -37,10 +37,10 @@ export default function Sidebar({ isOpen, onClose }) {
       allowedRoles: ["ROLE_ADMIN", "ROLE_MANAGER", "ROLE_EMPLOYEE"], // Ai cũng vào được
     },
     {
-      path: "/users",
-      name: "Quản lý nhân sự",
+      path: "/employees",
+      name: "Quản lý nhân viên",
       icon: Users,
-      allowedRoles: ["ROLE_ADMIN"], // Chỉ Admin (admin/admin123)
+      allowedRoles: ["ROLE_ADMIN", "ROLE_MANAGER"], // Chỉ Manager/Admin thấy
     },
     {
       path: "/approve-leave",
@@ -89,16 +89,20 @@ export default function Sidebar({ isOpen, onClose }) {
         }`}
       >
         <div className="flex items-center justify-between p-6 mb-4">
-          <div className="flex flex-col items-start">
+          <Link
+            to="/dashboard"
+            onClick={onClose}
+            className="flex flex-col items-start cursor-pointer hover:opacity-80 transition-opacity"
+          >
             <img src={logo} alt="HR Steak" className="h-8 mb-2 brightness-0" />
             <span className="font-bold text-lg tracking-tight text-black">
               HR Steak
             </span>
-            {/* Hiển thị Role cho ngầu */}
+            {/* Giữ nguyên phần hiển thị Role */}
             <span className="text-xs text-blue-600 font-bold px-2 py-0.5 bg-blue-100 rounded-full mt-1">
               {userRoles[0]?.replace("ROLE_", "")}
             </span>
-          </div>
+          </Link>
           <button
             onClick={onClose}
             className="p-1 hover:bg-gray-200 rounded-full"

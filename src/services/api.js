@@ -34,3 +34,9 @@ export const getMyProfile = async () => {
   const response = await apiUser.get("/api/users/me");
   return response.data;
 };
+
+// Hàm lấy danh sách nhân viên (Dành cho Manager/Admin)
+export const getEmployees = async () => {
+  const response = await apiUser.get("/api/employees");
+  return response.data;
+};
