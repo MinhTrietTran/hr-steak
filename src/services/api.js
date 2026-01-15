@@ -57,3 +57,12 @@ export const getMyAttendanceLogs = async () => {
   const response = await apiUser.get("/api/attendance/me");
   return response.data; // Trả về object chứa { message, data: [...] }
 };
+
+// ... các code cũ
+
+// Hàm lấy bảng công (Timesheet) đã được xử lý
+export const getMyTimesheets = async () => {
+  // Proxy sẽ tự chuyển sang cổng 5033
+  const response = await apiUser.get("/api/timesheets/me");
+  return response.data;
+};
