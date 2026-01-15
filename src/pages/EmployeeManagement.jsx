@@ -1,11 +1,25 @@
 import { useEffect, useState } from "react";
+// 1. Thêm import useNavigate
+import { useNavigate } from "react-router-dom";
 import { getEmployees } from "../services/api";
-import { Users, Search, Phone, Mail, Building, UserCheck } from "lucide-react";
+// 2. Thêm icon Clock
+import {
+  Users,
+  Search,
+  Phone,
+  Mail,
+  Building,
+  UserCheck,
+  Clock,
+} from "lucide-react";
 
 export default function EmployeeManagement() {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+
+  // 3. Khởi tạo hook điều hướng
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchList = async () => {
@@ -21,7 +35,7 @@ export default function EmployeeManagement() {
     fetchList();
   }, []);
 
-  // Logic lọc nhân viên theo ô tìm kiếm
+  // Logic lọc nhân viên
   const filtered = employees.filter(
     (emp) =>
       emp.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -71,6 +85,8 @@ export default function EmployeeManagement() {
                   <th className="p-4">Phòng ban</th>
                   <th className="p-4">Vai trò</th>
                   <th className="p-4">Trạng thái</th>
+                  {/* 4. Thêm cột Thao tác */}
+                  <th className="p-4 text-center">Thao tác</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 text-sm">
@@ -119,11 +135,23 @@ export default function EmployeeManagement() {
                           <UserCheck size={14} /> Active
                         </span>
                       </td>
+
+                      {/* 5. Nút bấm Xem công */}
+                      <td className="p-4 text-center">
+                        <button
+                          onClick={() =>
+                            navigate(`/employees/${emp.id}/timesheet`)
+                          }
+                          className="flex items-center justify-center gap-1 w-full bg-white border border-blue-200 text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg font-medium text-xs transition-all shadow-sm"
+                        >
+                          <Clock size={14} /> Xem công
+                        </button>
+                      </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="5" className="p-8 text-center text-gray-400">
+                    <td colSpan="6" className="p-8 text-center text-gray-400">
                       Không tìm thấy nhân viên nào.
                     </td>
                   </tr>

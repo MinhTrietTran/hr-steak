@@ -66,3 +66,17 @@ export const getMyTimesheets = async () => {
   const response = await apiUser.get("/api/timesheets/me");
   return response.data;
 };
+
+// Hàm mới: Manager xem bảng công của nhân viên cụ thể
+export const getEmployeeTimesheets = async (employeeId) => {
+  // Proxy sẽ chuyển request này về cổng 5033
+  const response = await apiUser.get(`/api/timesheets/employee/${employeeId}`);
+  return response.data;
+};
+
+// Hàm cập nhật Timesheet (Dành cho Admin/Manager)
+export const updateTimesheet = async (id, data) => {
+  // Proxy sẽ chuyển về cổng 5033, method PUT
+  const response = await apiUser.put(`/api/timesheets/${id}`, data);
+  return response.data;
+};

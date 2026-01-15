@@ -4,6 +4,7 @@ import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import EmployeeManagement from "./pages/EmployeeManagement";
+import EmployeeTimesheet from "./pages/EmployeeTimesheet";
 
 // 1. IMPORT TRANG BẢNG CÔNG (ATTENDANCE)
 import Attendance from "./pages/Attendance";
@@ -18,9 +19,11 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/employees" element={<EmployeeManagement />} />
-
-          {/* 2. ĐĂNG KÝ ĐƯỜNG DẪN /TIMESHEET */}
           <Route path="/timesheet" element={<Attendance />} />
+          <Route
+            path="/employees/:id/timesheet"
+            element={<EmployeeTimesheet />}
+          />
         </Route>
       </Routes>
     </BrowserRouter>
